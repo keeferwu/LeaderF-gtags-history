@@ -30,7 +30,7 @@ function! LeaderfGtagsInternel(qt,pat)
         call inputsave()
         let qtype = input("\nChoose a querytype for '".a:pat."'\n  d: GtagsFindDefinition\n  r: GtagsFindReference\n  s: GtagsFindSymbol\n  g: GtagsFindGrep\n  or\n  <querytype><pattern> to query `pattern`.\n> ")
         call inputrestore()
-        if len(qtype) > 1
+        if len(qtype) > 1 && qtype[1] != " "
             let pattern = qtype[0]." ".qtype[1:]
         else
             let pattern = qtype." ".a:pat
@@ -39,7 +39,9 @@ function! LeaderfGtagsInternel(qt,pat)
         let pattern = a:qt." ".a:pat
     endif
     let cmd = "Leaderf! gtags "
-    call LeaderfGtagsHistory(pattern)
+    if pattern[0] == 'd' || pattern[0] == 'r' || pattern[0] == 's' || pattern[0] == 'g'
+        call LeaderfGtagsHistory(pattern)
+    endif
     let cmd .= "-".pattern
     if pattern[0] == 'd'
         let cmd .= " --auto-jump"

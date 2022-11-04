@@ -32,7 +32,7 @@ function! LeaderfGtagsInternel(qt,pat)
         call inputrestore()
         let qtype = split(qinput)
         if len(qtype) == 0
-            return
+            return "echo '\n>> Input is empty!'"
         elseif len(qtype) == 1
             let pattern = qtype[0]." ".a:pat
         else
@@ -41,12 +41,15 @@ function! LeaderfGtagsInternel(qt,pat)
     else
         let pattern = a:qt." ".a:pat
     endif
-    if len(a:pat) == 0
-        return
+    let invlaid = matchstr(pattern[2:],'\W\+')
+    if !empty(invlaid) || len(pattern) <= 2
+        return "echo '\n>> Pattern is empty or invalid!'"
     endif
     let cmd = "Leaderf! gtags "
     if pattern[0] == 'd' || pattern[0] == 'r' || pattern[0] == 's' || pattern[0] == 'g'
         call LeaderfGtagsHistory(pattern)
+    else
+        return "echo '\n>> Querytype is invalid!'"
     endif
     let cmd .= "-".pattern
     if pattern[0] == 'd'

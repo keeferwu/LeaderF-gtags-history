@@ -28,7 +28,7 @@ endfunction
 function! LeaderfGtagsInternel(qt,pat)
     if a:qt == 'a'
         call inputsave()
-        let qinput = input("\nChoose a querytype for '".a:pat."'\n  d: GtagsFindDefinition\n  r: GtagsFindReference\n  s: GtagsFindSymbol\n  g: GtagsFindGrep\n  or\n  <querytype><pattern> to query `pattern`.\n> ")
+        let qinput = input("\nChoose a querytype for '".a:pat."'\n  d: GtagsFindDefinition\n  r: GtagsFindReference\n  s: GtagsFindSymbol\n  g: GtagsFindGrep\nOr <querytype> <pattern> to query `pattern`.\n> ")
         call inputrestore()
         let qtype = split(qinput)
         if len(qtype) == 0

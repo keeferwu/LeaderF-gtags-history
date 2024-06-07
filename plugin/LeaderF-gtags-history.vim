@@ -65,10 +65,10 @@ noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsInternel('s', expan
 noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsInternel('g', expand('<cword>'))<CR><CR>
 
 if get(g:, 'leader_gtags_nomap', 0) == 0
-map <silent> <leader>ga <Plug>LeaderfGtagsInternel
-map <silent> <leader>gd <Plug>LeaderfGtagsDefinition
-map <silent> <leader>gr <Plug>LeaderfGtagsReference
-map <silent> <leader>gs <Plug>LeaderfGtagsSymbol
-map <silent> <leader>gg <Plug>LeaderfGtagsGrep
+nmap <silent> <leader>ga <Plug>LeaderfGtagsInternel
+nmap <silent> <leader>gd <Plug>LeaderfGtagsDefinition
+nmap <silent> <leader>gr <Plug>LeaderfGtagsReference
+nmap <silent> <leader>gs <Plug>LeaderfGtagsSymbol
+nmap <silent> <leader>gg <Plug>LeaderfGtagsGrep
 endif
 

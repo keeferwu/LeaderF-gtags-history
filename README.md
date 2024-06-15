@@ -26,11 +26,11 @@ Provide related LeaderF command:
 
 | keymap | desc |
 |--------|------|
-| `<leader>fa` |  Show input text which want to definition or reference|
-| `<leader>fd` |  Show <cword> locations of definitions.|
-| `<leader>fr` |  Show <cword> reference to a symbol which has definitions.|
-| `<leader>fs` |  Show <cword> reference to a symbol which has no definition.|
-| `<leader>fg` |  Show all lines which match to the <cword>.|
+| `<leader>ga` |  Show input text which want to definition or reference|
+| `<leader>gd` |  Show <cword> locations of definitions.|
+| `<leader>gr` |  Show <cword> reference to a symbol which has definitions.|
+| `<leader>gs` |  Show <cword> reference to a symbol which has no definition.|
+| `<leader>gg` |  Show all lines which match to the <cword>.|
 
 You can disable the default keymaps by:
 

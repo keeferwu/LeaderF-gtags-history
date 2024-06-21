@@ -1,8 +1,10 @@
+if !exists('g:Lf_GtagsHistoryCount')
+    let g:Lf_GtagsHistoryCount = 20
+endif
 if !exists('g:Lf_Extensions')
     let g:Lf_Extensions = {}
 endif
 let g:Lf_GtagsHistoryList = []
-
 let g:Lf_Extensions.gtags_history = {
             \ 'source': 'leaderf#gtags_history#source',
             \ 'accept': 'leaderf#gtags_history#accept',
@@ -12,63 +14,73 @@ let g:Lf_Extensions.gtags_history = {
         \ }
 
 function! LeaderfGtagsHistory(pat)
-    if empty(a:pat)
-        return
-    endif
-    let pat_found   = index(g:Lf_GtagsHistoryList, a:pat)
-    if pat_found != -1
-        call remove(g:Lf_GtagsHistoryList, pat_found)
-    endif
-    if len(g:Lf_GtagsHistoryList) >= 20
-        call remove(g:Lf_GtagsHistoryList, 19)
-    endif
-    call insert(g:Lf_GtagsHistoryList, a:pat)
+  if empty(a:pat)
+    return
+  endif
+  let pat_found   = index(g:Lf_GtagsHistoryList, a:pat)
+  if pat_found != -1
+    call remove(g:Lf_GtagsHistoryList, pat_found)
+  endif
+  if len(g:Lf_GtagsHistoryList) >= g:Lf_GtagsHistoryCount
+    call remove(g:Lf_GtagsHistoryList, g:Lf_GtagsHistoryCount-1)
+  endif
+  call insert(g:Lf_GtagsHistoryList, a:pat)
 endfunction
 
-function! LeaderfGtagsInternel(qt,pat)
-    if a:qt == 'a'
-        call inputsave()
-        let qinput = input("\nChoose a querytype for '".a:pat."'\n  d: GtagsFindDefinition\n  r: GtagsFindReference\n  s: GtagsFindSymbol\n  g: GtagsFindGrep\nOr <querytype> <pattern> to query `pattern`.\n> ")
-        call inputrestore()
-        let qtype = split(qinput)
-        if len(qtype) == 0
-            return "echo '\n>> Input is empty!'"
-        elseif len(qtype) == 1
-            let pattern = qtype[0]." ".a:pat
-        else
-            let pattern = qtype[0]." ".qtype[1]
-        endif
-    else
-        let pattern = a:qt." ".a:pat
-    endif
-    let invlaid = matchstr(pattern[2:],'\W\+')
-    if !empty(invlaid) || len(pattern) <= 2
-        return "echo '\n>> Pattern is empty or invalid!'"
-    endif
-    let cmd = "Leaderf! gtags "
-    if pattern[0] == 'd' || pattern[0] == 'r' || pattern[0] == 's' || pattern[0] == 'g'
-        call LeaderfGtagsHistory(pattern)
-    else
-        return "echo '\n>> Querytype is invalid!'"
-    endif
-    let cmd .= "-".pattern
-    if pattern[0] == 'd'
-        let cmd .= " --auto-jump"
-    endif
-    return cmd
+function! LeaderfGtagsCmdlineRecord(qt,pat)
+  let invlaid = matchstr(a:pat,'\W\+')
+  if empty(a:pat) || !empty(invlaid)
+    return "echo '>> Pattern is empty or invalid!'"
+  endif
+  let pattern = a:qt . " " . a:pat
+  call LeaderfGtagsHistory(pattern)
+  return printf("Leaderf! gtags -%s%s", pattern, a:qt == 'd' ? ' --auto-jump' : '')
 endfunction
 
-noremap <Plug>LeaderfGtagsInternel   :<C-U><C-R>=LeaderfGtagsInternel('a', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsDefinition :<C-U><C-R>=LeaderfGtagsInternel('d', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsReference  :<C-U><C-R>=LeaderfGtagsInternel('r', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsInternel('s', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsInternel('g', expand('<cword>'))<CR><CR>
+function! LeaderfGtagsInternel(pat)
+  try
+    echohl Question
+    call inputsave()
+    let qinput = input("Choose a querytype for '".a:pat."'" .
+                     \ "\n  d: GtagsFindDefinition" .
+                     \ "\n  r: GtagsFindReference" .
+                     \ "\n  s: GtagsFindSymbol" .
+                     \ "\n  g: GtagsFindGrep" .
+                     \ "\n or <querytype> <pattern> to query `pattern`" .
+                     \ "\n> ")
+    call inputrestore()
+    "call feedkeys("\<c-u>", 'n')
+    redraw!
+    let qtype = split(qinput)
+    if len(qtype) == 0
+      exec "echo '>> Input is empty!'"
+      return
+    endif
+    if len(qtype) == 1
+      call add(qtype, a:pat)
+    endif
+    if qtype[0] == 'd' || qtype[0] == 'r' || qtype[0] == 's' || qtype[0] == 'g'
+      exec LeaderfGtagsCmdlineRecord(qtype[0], qtype[-1])
+    else
+      exec "echo '>> Querytype is invalid!'"
+    endif
+      catch /^Vim:Interrupt$/
+      echo "Command interrupted"
+  finally
+    echohl None
+  endtry
+endfunction
+
+noremap <Plug>LeaderfGtagsInternel   :<C-U>call LeaderfGtagsInternel(expand('<cword>'))<CR>
+noremap <Plug>LeaderfGtagsDefinition :<C-U><C-R>=LeaderfGtagsCmdlineRecord('d', expand('<cword>'))<CR><CR>
+noremap <Plug>LeaderfGtagsReference  :<C-U><C-R>=LeaderfGtagsCmdlineRecord('r', expand('<cword>'))<CR><CR>
+noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsCmdlineRecord('s', expand('<cword>'))<CR><CR>
+noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsCmdlineRecord('g', expand('<cword>'))<CR><CR>
 
 if get(g:, 'leader_gtags_nomap', 0) == 0
-nmap <silent> <leader>ga <Plug>LeaderfGtagsInternel
-nmap <silent> <leader>gd <Plug>LeaderfGtagsDefinition
-nmap <silent> <leader>gr <Plug>LeaderfGtagsReference
-nmap <silent> <leader>gs <Plug>LeaderfGtagsSymbol
-nmap <silent> <leader>gg <Plug>LeaderfGtagsGrep
+nmap <silent><leader>ga <Plug>LeaderfGtagsInternel
+nmap <silent><leader>gd <Plug>LeaderfGtagsDefinition
+nmap <silent><leader>gr <Plug>LeaderfGtagsReference
+nmap <silent><leader>gs <Plug>LeaderfGtagsSymbol
+nmap <silent><leader>gg <Plug>LeaderfGtagsGrep
 endif
-

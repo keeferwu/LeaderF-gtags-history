@@ -20,7 +20,7 @@ Provide related LeaderF command:
 
 ```vim
 :Leaderf! gtags_history              # show leaderf gtags search history
-:Leaderf! gtags_history --delete     # list and delete leaderf gtags database
+:Leaderf! gtags_history --cache      # list and delete leaderf gtags database cache
 ```
 
 ## Keymaps

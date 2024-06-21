@@ -19,7 +19,8 @@ Plug 'keeferwu/LeaderF-gtags-history'
 Provide related LeaderF command:
 
 ```vim
-:Leaderf! gtags_history
+:Leaderf! gtags_history              # show leaderf gtags search history
+:Leaderf! gtags_history --delete     # list and delete leaderf gtags database
 ```
 
 ## Keymaps

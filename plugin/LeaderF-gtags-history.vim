@@ -5,8 +5,15 @@ if !exists('g:Lf_Extensions')
     let g:Lf_Extensions = {}
 endif
 let g:Lf_GtagsHistoryList = []
+" 'arguments': [
+"     {'name': ['-d', '--delete'], 'nargs': 0},
+"     {'name': ['--untracked-files', '-u'], 'nargs': '?'}
+"  ],
 let g:Lf_Extensions.gtags_history = {
             \ 'source': 'leaderf#gtags_history#source',
+            \ 'arguments': [
+            \     {'name': ['-d', '--delete'], 'nargs': 0},
+            \ ],
             \ 'accept': 'leaderf#gtags_history#accept',
             \ 'highlights_def': {
             \   'Lf_hl_funcScope': '^\S\+',

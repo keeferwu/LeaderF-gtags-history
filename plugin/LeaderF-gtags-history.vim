@@ -12,7 +12,7 @@ let g:Lf_GtagsHistoryList = []
 let g:Lf_Extensions.gtags_history = {
             \ 'source': 'leaderf#gtags_history#source',
             \ 'arguments': [
-            \     {'name': ['-d', '--delete'], 'nargs': 0},
+            \     {'name': ['-c', '--cache'], 'nargs': 0},
             \ ],
             \ 'accept': 'leaderf#gtags_history#accept',
             \ 'highlights_def': {

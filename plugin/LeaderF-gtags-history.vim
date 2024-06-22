@@ -56,7 +56,6 @@ function! LeaderfGtagsInternel(pat)
                      \ "\n or <querytype> <pattern> to query `pattern`" .
                      \ "\n> ")
     call inputrestore()
-    "call feedkeys("\<c-u>", 'n')
     redraw!
     let qtype = split(qinput)
     if len(qtype) == 0

@@ -1,5 +1,3 @@
-let g:Lf_GtagsDatabase = expand(g:Lf_CacheDirectory.'/LeaderF/gtags/')
-
 function! leaderf#gtags_history#source(args) abort "{{{
   let l:histories = []
   let l:keys = filter(keys(a:args), 'v:val =~# "^-"')
@@ -9,7 +7,8 @@ function! leaderf#gtags_history#source(args) abort "{{{
       let l:histories += [l:history]
     endfor
   else
-    for l:history in split(globpath(g:Lf_GtagsDatabase, '*'), '\n')
+    let s:Lf_GtagsDatabase = expand(g:Lf_CacheDirectory.'/LeaderF/gtags/')
+    for l:history in split(globpath(s:Lf_GtagsDatabase, '*'), '\n')
       let l:history = fnamemodify(l:history, ':t')
       let l:histories += [l:history]
     endfor
@@ -24,7 +23,7 @@ function! leaderf#gtags_history#accept(line, args) abort "{{{
   else
     echo 'Do you want to delete ' . a:line . '?  [y/n]'
     if nr2char(getchar()) == 'y'
-      let item = g:Lf_GtagsDatabase . a:line
+      let item = s:Lf_GtagsDatabase . a:line
       call system('rm -rf ' . shellescape(item))
     endif
     execute "Leaderf gtags_history -c"

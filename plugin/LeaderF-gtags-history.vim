@@ -84,9 +84,9 @@ noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsCmdlineRecord('s', 
 noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsCmdlineRecord('g', expand('<cword>'))<CR><CR>
 
 if get(g:, 'leader_gtags_nomap', 0) == 0
-nmap <silent><leader>ga <Plug>LeaderfGtagsInternel
-nmap <silent><leader>gd <Plug>LeaderfGtagsDefinition
-nmap <silent><leader>gr <Plug>LeaderfGtagsReference
-nmap <silent><leader>gs <Plug>LeaderfGtagsSymbol
-nmap <silent><leader>gg <Plug>LeaderfGtagsGrep
+nmap <silent> <leader>ga <Plug>LeaderfGtagsInternel
+nmap <silent> <leader>gd <Plug>LeaderfGtagsDefinition
+nmap <silent> <leader>gr <Plug>LeaderfGtagsReference
+nmap <silent> <leader>gs <Plug>LeaderfGtagsSymbol
+nmap <silent> <leader>gg <Plug>LeaderfGtagsGrep
 endif

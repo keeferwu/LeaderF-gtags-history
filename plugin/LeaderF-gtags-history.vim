@@ -15,6 +15,7 @@ let g:Lf_Extensions.gtags_history = {
             \     {'name': ['-c', '--cache'], 'nargs': 0},
             \ ],
             \ 'accept': 'leaderf#gtags_history#accept',
+            \ "preview": "leaderf#gtags_history#preview",
             \ 'highlights_def': {
             \   'Lf_hl_funcScope': '^\S\+',
             \ },

@@ -30,3 +30,16 @@ function! leaderf#gtags_history#accept(line, args) abort "{{{
     call feedkeys("\<cr>", 'n')
   endif
 endfunction "}}}
+
+function! leaderf#gtags_history#preview(orig_buf_nr, orig_cursor, line, args) abort "{{{
+  let l:keys = filter(keys(a:args), 'v:val =~# "^-"')
+  if empty(l:keys)
+    let l:bufname = tempname()
+    let l:cmds = 'global --gtagslabel='.$GTAGSLABEL.' -l -'.a:line.' --result=ctags-mod > '.l:bufname
+    call system(l:cmds)
+    let l:bufnr = bufadd(l:bufname)
+    return [l:bufnr, 0, '']
+  endif
+  return
+endfunction "}}}
+

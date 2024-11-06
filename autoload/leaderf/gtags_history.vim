@@ -32,6 +32,9 @@ function! leaderf#gtags_history#accept(line, args) abort "{{{
 endfunction "}}}
 
 function! leaderf#gtags_history#preview(orig_buf_nr, orig_cursor, line, args) abort "{{{
+  if !get(g:, 'Lf_GtagsHistoryPreview', 0)
+    return
+  endif
   let l:keys = filter(keys(a:args), 'v:val =~# "^-"')
   if empty(l:keys)
     let l:bufname = tempname()

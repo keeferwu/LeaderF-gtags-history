@@ -42,7 +42,7 @@ function! LeaderfGtagsCmdlineRecord(qt,pat)
   endif
   let pattern = a:qt . " " . a:pat
   call LeaderfGtagsHistory(pattern)
-  return printf("Leaderf! gtags -%s%s", pattern, a:qt == 'd' ? ' --auto-jump' : '')
+  return printf("Leaderf gtags -%s%s", pattern, a:qt == 'd' ? ' --auto-jump' : '')
 endfunction
 
 function! LeaderfGtagsInternel(pat)

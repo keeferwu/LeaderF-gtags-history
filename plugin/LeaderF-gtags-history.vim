@@ -9,7 +9,7 @@ let g:Lf_GtagsHistoryList = []
 "     {'name': ['-d', '--delete'], 'nargs': 0},
 "     {'name': ['--untracked-files', '-u'], 'nargs': '?'}
 "  ],
-let g:Lf_Extensions.gtags_history = {
+let g:Lf_Extensions.gtagsHistory = {
             \ 'source': 'leaderf#gtags_history#source',
             \ 'arguments': [
             \     {'name': ['-c', '--cache'], 'nargs': 0},
@@ -78,13 +78,15 @@ function! LeaderfGtagsInternel(pat)
   endtry
 endfunction
 
+noremap <Plug>LeaderfGtagsHistory    :<C-U>Leaderf gtagsHistory<CR>
 noremap <Plug>LeaderfGtagsInternel   :<C-U>call LeaderfGtagsInternel(expand('<cword>'))<CR>
 noremap <Plug>LeaderfGtagsDefinition :<C-U><C-R>=LeaderfGtagsCmdlineRecord('d', expand('<cword>'))<CR><CR>
 noremap <Plug>LeaderfGtagsReference  :<C-U><C-R>=LeaderfGtagsCmdlineRecord('r', expand('<cword>'))<CR><CR>
 noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsCmdlineRecord('s', expand('<cword>'))<CR><CR>
 noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsCmdlineRecord('g', expand('<cword>'))<CR><CR>
 
-if get(g:, 'leader_gtags_nomap', 0) == 0
+if !get(g:, 'leader_gtags_nomap', 0)
+nmap <silent> <leader>gh <Plug>LeaderfGtagsHistory
 nmap <silent> <leader>ga <Plug>LeaderfGtagsInternel
 nmap <silent> <leader>gd <Plug>LeaderfGtagsDefinition
 nmap <silent> <leader>gr <Plug>LeaderfGtagsReference

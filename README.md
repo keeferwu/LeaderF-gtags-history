@@ -19,14 +19,15 @@ Plug 'keeferwu/LeaderF-gtags-history'
 Provide related LeaderF command:
 
 ```vim
-:Leaderf! gtags_history              # show leaderf gtags search history
-:Leaderf! gtags_history --cache      # list and delete leaderf gtags database cache
+:Leaderf gtagsHistory              # show leaderf gtags search history
+:Leaderf gtagsHistory --cache      # list and delete leaderf gtags database cache
 ```
 
 ## Keymaps
 
 | keymap | desc |
 |--------|------|
+| `<leader>gh` |  Show history of leaderf gtags|
 | `<leader>ga` |  Show input text which want to definition or reference|
 | `<leader>gd` |  Show <cword> locations of definitions.|
 | `<leader>gr` |  Show <cword> reference to a symbol which has definitions.|
@@ -42,12 +43,12 @@ let g:leader_gtags_nomap = 1
 and define your new maps like:
 
 ```VimL
-
-map <silent> <leader>fa <Plug>LeaderfGtagsInternel
-map <silent> <leader>fd <Plug>LeaderfGtagsDefinition
-map <silent> <leader>fr <Plug>LeaderfGtagsReference
-map <silent> <leader>fs <Plug>LeaderfGtagsSymbol
-map <silent> <leader>fg <Plug>LeaderfGtagsGrep
+nmap <silent> <leader>fh <Plug>LeaderfGtagsHistory
+nmap <silent> <leader>fa <Plug>LeaderfGtagsInternel
+nmap <silent> <leader>fd <Plug>LeaderfGtagsDefinition
+nmap <silent> <leader>fr <Plug>LeaderfGtagsReference
+nmap <silent> <leader>fs <Plug>LeaderfGtagsSymbol
+nmap <silent> <leader>fg <Plug>LeaderfGtagsGrep
 ```
 
 

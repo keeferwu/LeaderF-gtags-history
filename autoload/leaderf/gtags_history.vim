@@ -26,7 +26,7 @@ function! leaderf#gtags_history#accept(line, args) abort "{{{
       let item = s:Lf_GtagsDatabase . a:line
       call system('rm -rf ' . shellescape(item))
     endif
-    execute "Leaderf gtags_history -c"
+    execute "Leaderf gtagsHistory -c"
     call feedkeys("\<cr>", 'n')
   endif
 endfunction "}}}

@@ -71,8 +71,8 @@ function! LeaderfGtagsInternel(pat)
     else
       exec "echo '>> Querytype is invalid!'"
     endif
-      catch /^Vim:Interrupt$/
-      echo "Command interrupted"
+  catch /^Vim:Interrupt$/
+    echo "Command interrupted"
   finally
     echohl None
   endtry

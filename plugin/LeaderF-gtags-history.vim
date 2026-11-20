@@ -17,15 +17,22 @@ let g:Lf_Extensions.gtagsHistory = {
             \ 'accept': 'leaderf#gtags_history#accept',
             \ "preview": "leaderf#gtags_history#preview",
             \ 'highlights_def': {
-            \   'Lf_hl_funcScope': '^\S\+',
+            \   'Lf_hl_gtagsLineNumber': '^\s*\d\+',
+            \   'Lf_hl_funcScope':       '^\s*\d\+\s\+\zs\S\+',
+            \   'Lf_hl_gtagsFileName':   '^\s*\d\+\s\+\S\+\s\+\zs.*',
             \ },
         \ }
+
+" history line is '<count> <qt> <pat>' -> '<qt> <pat>'
+function! LeaderfGtagsPattern(line)
+  return substitute(a:line, '^\s*\d\+\s\+', '', '')
+endfunction
 
 function! LeaderfGtagsHistory(pat)
   if empty(a:pat)
     return
   endif
-  let pat_found   = index(g:Lf_GtagsHistoryList, a:pat)
+  let pat_found   = index(map(copy(g:Lf_GtagsHistoryList), 'LeaderfGtagsPattern(v:val)'), LeaderfGtagsPattern(a:pat))
   if pat_found != -1
     call remove(g:Lf_GtagsHistoryList, pat_found)
   endif
@@ -35,14 +42,38 @@ function! LeaderfGtagsHistory(pat)
   call insert(g:Lf_GtagsHistoryList, a:pat)
 endfunction
 
+function! LeaderfGtagsCount()
+  " Matches of the search that just ran. LeaderF's read thread fills _content and sets
+  " _read_finished; --auto-jump never does (it jumps on 0 or 1 match), so its content
+  " would be a leftover one. Consume the flag so a stale value is not reported later.
+  try
+    " gtagsExplManager is only global to py3eval after the gtags window was opened
+    let l:mgr = '__import__("leaderf.gtagsExpl", fromlist=["x"]).gtagsExplManager'
+    if g:Lf_PyEval('"--auto-jump" in ' . l:mgr . '.getArguments()')
+      return 0
+    endif
+    if g:Lf_PyEval('getattr(' . l:mgr . ', "_read_finished", 0)') <= 0
+      return 0
+    endif
+    let l:count = g:Lf_PyEval('len(' . l:mgr . '._content)')
+    call g:Lf_PyEval('setattr(' . l:mgr . ', "_read_finished", 0)')
+    return l:count
+  catch
+    return 0
+  endtry
+endfunction
+
 function! LeaderfGtagsCmdlineRecord(qt,pat)
   let invlaid = matchstr(a:pat,'\W\+')
   if empty(a:pat) || !empty(invlaid)
-    return "echo '>> Pattern is empty or invalid!'"
+    echo '>> Pattern is empty or invalid!'
+    return
   endif
-  let pattern = a:qt . " " . a:pat
-  call LeaderfGtagsHistory(pattern)
-  return printf("Leaderf gtags -%s%s", pattern, a:qt == 'd' ? ' --auto-jump' : '')
+  execute printf('Leaderf gtags -%s %s%s', a:qt, a:pat, a:qt == 'd' ? ' --auto-jump' : '')
+  let l:count = LeaderfGtagsCount()
+  if l:count > 0
+    call LeaderfGtagsHistory(printf('%-10d %-5s %s', l:count, a:qt, a:pat))
+  endif
 endfunction
 
 function! LeaderfGtagsInternel(pat)
@@ -67,7 +98,7 @@ function! LeaderfGtagsInternel(pat)
       call add(qtype, a:pat)
     endif
     if qtype[0] == 'd' || qtype[0] == 'r' || qtype[0] == 's' || qtype[0] == 'g'
-      exec LeaderfGtagsCmdlineRecord(qtype[0], qtype[-1])
+      call LeaderfGtagsCmdlineRecord(qtype[0], qtype[-1])
     else
       exec "echo '>> Querytype is invalid!'"
     endif
@@ -80,10 +111,10 @@ endfunction
 
 noremap <Plug>LeaderfGtagsHistory    :<C-U>Leaderf gtagsHistory<CR>
 noremap <Plug>LeaderfGtagsInternel   :<C-U>call LeaderfGtagsInternel(expand('<cword>'))<CR>
-noremap <Plug>LeaderfGtagsDefinition :<C-U><C-R>=LeaderfGtagsCmdlineRecord('d', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsReference  :<C-U><C-R>=LeaderfGtagsCmdlineRecord('r', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsSymbol     :<C-U><C-R>=LeaderfGtagsCmdlineRecord('s', expand('<cword>'))<CR><CR>
-noremap <Plug>LeaderfGtagsGrep       :<C-U><C-R>=LeaderfGtagsCmdlineRecord('g', expand('<cword>'))<CR><CR>
+noremap <Plug>LeaderfGtagsDefinition :<C-U>call LeaderfGtagsCmdlineRecord('d', expand('<cword>'))<CR>
+noremap <Plug>LeaderfGtagsReference  :<C-U>call LeaderfGtagsCmdlineRecord('r', expand('<cword>'))<CR>
+noremap <Plug>LeaderfGtagsSymbol     :<C-U>call LeaderfGtagsCmdlineRecord('s', expand('<cword>'))<CR>
+noremap <Plug>LeaderfGtagsGrep       :<C-U>call LeaderfGtagsCmdlineRecord('g', expand('<cword>'))<CR>
 
 if !get(g:, 'leader_gtags_nomap', 0)
 nmap <silent> <leader>gh <Plug>LeaderfGtagsHistory

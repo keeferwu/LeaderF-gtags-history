@@ -19,7 +19,7 @@ endfunction "}}}
 function! leaderf#gtags_history#accept(line, args) abort "{{{
   let l:keys = filter(keys(a:args), 'v:val =~# "^-"')
   if empty(l:keys)
-    execute "Leaderf! gtags -".a:line
+    execute "Leaderf! gtags -".LeaderfGtagsPattern(a:line)
   else
     echo 'Do you want to delete ' . a:line . '?  [y/n]'
     if nr2char(getchar()) == 'y'
@@ -38,7 +38,8 @@ function! leaderf#gtags_history#preview(orig_buf_nr, orig_cursor, line, args) ab
   let l:keys = filter(keys(a:args), 'v:val =~# "^-"')
   if empty(l:keys)
     let l:bufname = tempname()
-    let l:cmds = 'global --gtagslabel='.$GTAGSLABEL.' -l -'.a:line.' --result=ctags-mod > '.l:bufname
+    let l:label = empty($GTAGSLABEL) ? '' : '--gtagslabel=' . $GTAGSLABEL . ' '
+    let l:cmds = 'global ' . l:label . '-l -' . LeaderfGtagsPattern(a:line) . ' --result=ctags-mod > ' . l:bufname
     call system(l:cmds)
     let l:bufnr = bufadd(l:bufname)
     return [l:bufnr, 0, '']
